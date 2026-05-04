@@ -1,0 +1,117 @@
+
+# WEEK 2: EXPLORATORY DATA ANALYSIS (EDA)
+
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+# 1. Load Dataset
+
+
+df = pd.read_csv("cleaned_hotel_data.csv")
+print(df.shape)
+
+
+# 2. Basic Overview
+
+print("\n🔍 Dataset Info:")
+print(df.info())
+
+print("\n📊 Statistical Summary:")
+print(df.describe())
+
+
+# 3. Univariate Analysis
+
+
+# Cancellation Distribution
+plt.figure()
+sns.countplot(x='is_canceled', data=df)
+plt.title("Cancellation Distribution")
+plt.show()
+
+# ADR Distribution
+plt.figure()
+sns.histplot(df['adr'], bins=50)
+plt.title("ADR Distribution")
+plt.show()
+
+# Lead Time Distribution
+plt.figure()
+sns.histplot(df['lead_time'], bins=50)
+plt.title("Lead Time Distribution")
+plt.show()
+
+
+# 4. Bivariate Analysis
+
+
+# Lead Time vs Cancellation
+plt.figure()
+sns.boxplot(x='is_canceled', y='lead_time', data=df)
+plt.title("Lead Time vs Cancellation")
+plt.show()
+
+# ADR vs Cancellation
+plt.figure()
+sns.boxplot(x='is_canceled', y='adr', data=df)
+plt.title("ADR vs Cancellation")
+plt.show()
+
+# Market Segment vs Cancellation
+plt.figure()
+sns.countplot(x='market_segment', hue='is_canceled', data=df)
+plt.xticks(rotation=45)
+plt.title("Market Segment vs Cancellation")
+plt.show()
+
+# Lead Time Group vs Cancellation
+plt.figure()
+sns.countplot(x='lead_time_group', hue='is_canceled', data=df)
+plt.title("Lead Time Group vs Cancellation")
+plt.show()
+
+
+# 5. Correlation Analysis
+
+plt.figure(figsize=(10,6))
+corr = df.corr(numeric_only=True)
+sns.heatmap(corr, annot=True)
+plt.title("Correlation Matrix")
+plt.show()
+
+
+# 6. Seasonal Analysis
+
+
+# Bookings per Month
+plt.figure()
+sns.countplot(x='arrival_month', data=df)
+plt.title("Bookings per Month")
+plt.show()
+
+# ADR Trend by Month
+plt.figure()
+sns.lineplot(x='arrival_month', y='adr', data=df)
+plt.title("ADR Trend by Month")
+plt.show()
+
+
+# 7. Customer Segmentation
+
+
+# Family vs Cancellation
+plt.figure()
+sns.countplot(x='is_family', hue='is_canceled', data=df)
+plt.title("Family vs Cancellation")
+plt.show()
+
+# Customer Type vs Cancellation
+plt.figure()
+sns.countplot(x='customer_type', hue='is_canceled', data=df)
+plt.xticks(rotation=45)
+plt.title("Customer Type vs Cancellation")
+plt.show()
+
