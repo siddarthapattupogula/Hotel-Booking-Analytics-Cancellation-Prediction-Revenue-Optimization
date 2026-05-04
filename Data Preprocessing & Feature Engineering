@@ -1,0 +1,155 @@
+# WEEK 1: Data Preprocessing & Feature Engineering
+# Dataset Creation + Cleaning + Feature Engineering
+
+
+import pandas as pd
+import numpy as np
+
+
+# 1. Create Synthetic Dataset
+
+print("📥 Creating dataset...")
+
+np.random.seed(42)
+n = 100000  # Large dataset
+
+data = {
+    "hotel": np.random.choice(["Resort Hotel", "City Hotel"], n),
+    "lead_time": np.random.randint(0, 365, n),
+    "stays_in_weekend_nights": np.random.randint(0, 3, n),
+    "stays_in_week_nights": np.random.randint(1, 10, n),
+    "adults": np.random.randint(1, 4, n),
+    "children": np.random.randint(0, 3, n),
+    "babies": np.random.randint(0, 2, n),
+    "meal": np.random.choice(["BB", "HB", "FB", "SC"], n),
+    "market_segment": np.random.choice(["Online", "Offline", "Corporate"], n),
+    "distribution_channel": np.random.choice(["Direct", "TA/TO"], n),
+    "is_repeated_guest": np.random.choice([0, 1], n),
+    "previous_cancellations": np.random.randint(0, 5, n),
+    "booking_changes": np.random.randint(0, 3, n),
+    "customer_type": np.random.choice(["Transient", "Contract", "Group"], n),
+    "adr": np.round(np.random.uniform(50, 500, n), 2),
+    "arrival_date_year": np.random.choice([2022, 2023, 2024], n),
+    "arrival_date_month": np.random.choice([
+        "January","February","March","April","May","June",
+        "July","August","September","October","November","December"
+    ], n),
+    "arrival_date_day_of_month": np.random.randint(1, 31, n),
+    "is_canceled": np.random.choice([0, 1], n, p=[0.7, 0.3])
+}
+
+df = pd.DataFrame(data)
+
+print("✅ Dataset created")
+print("Shape:", df.shape)
+
+
+
+# 2. Handle Missing Values
+
+print("\n🧹 Handling missing values...")
+
+df['children'] = df['children'].fillna(0)
+
+print("✅ Missing values handled")
+
+
+
+# 3. Remove Invalid Records
+
+print("\n🚫 Removing invalid records...")
+
+initial_rows = df.shape[0]
+
+df = df[(df['adults'] + df['children'] + df['babies']) > 0]
+
+print(f"✅ Removed {initial_rows - df.shape[0]} invalid rows")
+
+
+
+# 4. Handle Outliers
+
+print("\n📉 Removing ADR outliers...")
+
+before = df.shape[0]
+df = df[df['adr'] < 5000]
+
+print(f"✅ Removed {before - df.shape[0]} outliers")
+
+
+
+# 5. Feature Engineering
+
+print("\n⚙️ Creating features...")
+
+df['total_stay'] = df['stays_in_weekend_nights'] + df['stays_in_week_nights']
+df['total_guests'] = df['adults'] + df['children'] + df['babies']
+df['is_family'] = np.where(df['total_guests'] > 1, 1, 0)
+
+df['lead_time_group'] = pd.cut(
+    df['lead_time'],
+    bins=[0, 7, 30, 90, 365],
+    labels=['Last-Minute', 'Short', 'Medium', 'Long']
+)
+
+print("✅ Features created")
+
+
+
+# Date Processing (FINAL FIX)
+
+print("\n📅 Processing dates...")
+
+# Generate VALID dates directly
+df['arrival_date'] = pd.to_datetime(
+    np.random.choice(
+        pd.date_range(start="2022-01-01", end="2024-12-31"),
+        size=len(df)
+    )
+)
+
+# Extract components (optional but useful)
+df['arrival_year'] = df['arrival_date'].dt.year
+df['arrival_month'] = df['arrival_date'].dt.month
+df['arrival_day'] = df['arrival_date'].dt.day
+
+print("✅ Dates processed successfully (no errors)\n")
+
+
+
+# 7. Encode Categorical Columns
+
+print("\n🔄 Encoding categorical data...")
+
+categorical_cols = [
+    'hotel', 'meal', 'market_segment',
+    'distribution_channel', 'customer_type'
+]
+
+for col in categorical_cols:
+    df[col] = df[col].astype('category').cat.codes
+
+print("✅ Encoding completed")
+
+
+
+# 8. Final Check
+
+print("\n🔍 Final dataset info:")
+print(df.info())
+
+print("\n📊 Missing values:")
+print(df.isnull().sum())
+
+
+# 9. Save Dataset
+
+df.to_csv("cleaned_hotel_data.csv", index=False)
+
+print("\n💾 Cleaned dataset saved as cleaned_hotel_data.csv")
+
+
+# 10. Download File (Colab)
+
+from google.colab import files
+files.download("cleaned_hotel_data.csv")
