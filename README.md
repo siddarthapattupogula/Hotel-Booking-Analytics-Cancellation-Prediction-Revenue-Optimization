@@ -38,6 +38,7 @@ Clean, structured dataset ready for analysis
 - Pricing varies across months indicating seasonal demand
 - Certain customer segments are more prone to cancellations
 - Group/family bookings behave differently than individual bookings
+
 🛠️ Tools & Technologies
 Python
 Pandas
