@@ -40,9 +40,15 @@ Clean, structured dataset ready for analysis
 - Group/family bookings behave differently than individual bookings
 
 🛠️ Tools & Technologies
+
 Python
+
 Pandas
+
 NumPy
-Matplotlib
+
+Matplotlib\
+
 Seaborn
+
 Google Colab
