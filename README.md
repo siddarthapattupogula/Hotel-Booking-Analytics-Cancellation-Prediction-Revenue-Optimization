@@ -14,6 +14,10 @@ This project analyzes hotel booking data to identify cancellation patterns, cust
 - Generated valid date features for time-based analysis
 🔹 Outcome
 Clean, structured dataset ready for analysis
+
+
+
+
 🟡 Week 2: Exploratory Data Analysis (EDA)
 🔹 Analysis Performed
 - Univariate analysis of key variables
