@@ -47,7 +47,7 @@ Pandas
 
 NumPy
 
-Matplotlib\
+Matplotlib
 
 Seaborn
 
