@@ -116,4 +116,5 @@ In Week 4, the analytical and machine learning results were converted into inter
 - Interactive Dashboard
 - Final Presentation
 - Business Insights Report
-"C:\Users\siddu\OneDrive\Documents\Pictures\Screenshots\Screenshot 2026-05-11 163142.png"
+- <img width="1277" height="766" alt="Screenshot 2026-05-11 163142" src="https://github.com/user-attachments/assets/1dd03f72-43ce-4ebc-8c45-f94990e5855b" />
+
