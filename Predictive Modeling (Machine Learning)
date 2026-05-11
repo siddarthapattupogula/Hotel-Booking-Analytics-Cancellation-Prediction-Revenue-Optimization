@@ -1,0 +1,167 @@
+# Week 3 - Hotel Booking Cancellation Prediction
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import LabelEncoder
+
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import roc_auc_score
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.metrics import roc_curve
+
+
+# loading the cleaned dataset
+
+df = pd.read_csv("cleaned_hotel_data.csv")
+print("\nDataset Shape")
+print(df.shape)
+
+
+# checking first few rows
+
+print("\nFirst 5 Rows")
+print(df.head())
+
+
+# removing unwanted columns
+
+# removing date column because model
+# cannot directly work with datetime
+
+if 'arrival_date' in df.columns:
+    df = df.drop('arrival_date', axis=1)
+    print("\narrival_date column removed")
+
+
+# converting text columns into numbers
+
+print("\nEncoding categorical columns...")
+label_encoder = LabelEncoder()
+for column in df.columns:
+
+    # checking for text columns
+
+    if df[column].dtype == 'object':
+        print("Converting column :", column)
+
+        # converting text into numbers
+        df[column] = label_encoder.fit_transform(df[column])
+print("\nAll categorical columns converted successfully")
+
+
+# selecting input and output columns
+
+x = df.drop('is_canceled', axis=1)
+y = df['is_canceled']
+print("\nFeatures and target selected")
+
+
+# splitting dataset
+x_train, x_test, y_train, y_test = train_test_split(
+    x,
+    y,
+    test_size=0.2,
+    random_state=42
+)
+
+print("\nTraining data shape :", x_train.shape)
+print("Testing data shape :", x_test.shape)
+
+
+# creating logistic regression model
+
+model = LogisticRegression(
+    max_iter=1000,
+    solver='liblinear'
+)
+
+print("\nTraining model...")
+model.fit(x_train, y_train)
+print("Model trained successfully")
+
+
+# making predictions
+
+y_pred = model.predict(x_test)
+y_prob = model.predict_proba(x_test)[:, 1]
+print("\nPredictions completed")
+
+
+# checking model performance
+
+acc = accuracy_score(y_test, y_pred)
+prec = precision_score(y_test, y_pred)
+rec = recall_score(y_test, y_pred)
+roc = roc_auc_score(y_test, y_prob)
+
+print("\nModel Performance")
+print("----------------------")
+print("Accuracy  :", round(acc, 4))
+print("Precision :", round(prec, 4))
+print("Recall    :", round(rec, 4))
+print("ROC AUC   :", round(roc, 4))
+
+
+# classification report
+
+print("\nClassification Report\n")
+print(classification_report(y_test, y_pred))
+
+
+# confusion matrix
+cm = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(6,4))
+sns.heatmap(
+    cm,
+    annot=True,
+    fmt='d'
+)
+
+plt.title("Confusion Matrix")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.show()
+
+
+# ROC curve
+
+fpr, tpr, threshold = roc_curve(y_test, y_prob)
+plt.figure(figsize=(6,4))
+plt.plot(fpr, tpr)
+plt.plot([0,1], [0,1], linestyle='--')
+plt.title("ROC Curve")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.show()
+
+
+# feature importance
+
+importance = pd.DataFrame({
+    'Feature': x.columns,
+    'Coefficient': model.coef_[0]
+})
+
+importance = importance.sort_values(
+    by='Coefficient',
+    ascending=False
+)
+
+print("\nTop Important Features\n")
+print(importance.head(10))
+
+
+# saving prediction results
+
+results = x_test.copy()
+results['Actual'] = y_test.values
+results['Predicted'] = y_pred
+results.to_csv("prediction_results.csv", index=False)
